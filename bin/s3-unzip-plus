@@ -18,22 +18,31 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-**/
-"use strict";
+*/
 
-var command = require("commander");
-var pkg = require("../package.json");
-var s3UnziPlus = require("../index.js");
+import { readFile } from 'fs/promises'
+import { program } from 'commander'
+// eslint-disable-next-line import/extensions
+import s3UnzipPlus from '../index.js'
 
-command
-  .description(pkg.description)
-  .version(pkg.version);
+async function run() {
+  const pkg = JSON.parse(await readFile(new URL('../package.json', import.meta.url)))
 
-command
-  .usage("[options] <S3 bucket name> <filename>")
-  .option("-d --delete-on-success", "Delete the zip file on S3 once the decompression has finished")
-  .option("-m --copy-metadata', 'Copy S3 metadata from zip file to unzipped files")
-  .option("-v --verbose", "Show all console logs")
-  .parse(process.argv);
+  program.description(pkg.description).version(pkg.version)
 
-var s = new s3UnziPlus(command);
+  program
+    .usage('[options] <S3 bucket name> <filename>')
+    .argument('<bucket-name>', 'S3 bucket name')
+    .argument('<filename>', 'filename')
+    .option(
+      '-d --delete-on-success',
+      'Delete the zip file on S3 once the decompression has finished'
+    )
+    .option('-m --copy-metadata', 'Copy S3 metadata from zip file to unzipped files')
+    .option('-v --verbose', 'Show all console logs')
+    .parse()
+
+  await s3UnzipPlus(program)
+}
+
+run()

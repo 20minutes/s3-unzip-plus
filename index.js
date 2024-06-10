@@ -19,54 +19,42 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-'use strict'
 
-var Utils = require('./util')
+// eslint-disable-next-line import/extensions
+import { decompress } from './util.js'
 
-function s3UnzipPlus(command, cb) {
-  if (cb === undefined) { cb = function () { } }
-  var vBucket, vFile, vTargetBucket, vTargetFolder
-  if (command.args && command.args.length >= 4) {
-    vBucket = command.args[0]
-    vFile = command.args[1]
-    vTargetBucket = command.args[2]
-    vTargetFolder = command.args[3]
+export default async (command) => {
+  let bucket
+  let file
+  let targetBucket
+  let targetFolder
+  if (command.args && command.args.length >= 2) {
+    ;[bucket, file, targetBucket, targetFolder] = command.args
   }
-  if (command.bucket) {
-    vBucket = command.bucket
+
+  if (!targetBucket) {
+    targetBucket = bucket
   }
-  if (command.file) {
-    vFile = command.file
+  if (!targetFolder) {
+    targetFolder = ''
   }
-  if (command.targetBucket) {
-    vTargetBucket = command.targetBucket
-  } else {
-    vTargetBucket = command.bucket
-  }
-  if (command.targetFolder) {
-    vTargetFolder = command.targetFolder
-  } else {
-    vTargetFolder = ''
-  }
-  Utils.decompress({
-    bucket: vBucket,
-    file: vFile,
-    targetBucket: vTargetBucket,
-    targetFolder: vTargetFolder,
-    deleteOnSuccess: command.deleteOnSuccess,
-    copyMetadata: command.copyMetadata,
-    verbose: command.verbose
-  }, cb)
+
+  await decompress({
+    bucket,
+    file,
+    targetBucket,
+    targetFolder,
+    deleteOnSuccess: command.opts().deleteOnSuccess ?? false,
+    copyMetadata: command.opts().copyMetadata ?? false,
+    verbose: command.opts().verbose ?? false,
+  })
 }
 
-module.exports = s3UnzipPlus
-
-module.exports.handler = function (event, context, callback) {
-  if (callback === undefined) { callback = function () { } }
-  Utils.decompress({
+export const handler = async (event) => {
+  await decompress({
     bucket: event.Records[0].s3.bucket.name,
     file: event.Records[0].s3.object.key,
     deleteOnSuccess: true,
-    verbose: true
-  }, callback)
+    verbose: true,
+  })
 }
