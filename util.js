@@ -19,120 +19,129 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-'use strict'
 
-var AWS = require('aws-sdk')
-var s3 = new AWS.S3()
-var AdmZip = require('adm-zip')
-var fs = require('fs')
-var dateTime = require('date-time')
-var md5 = require('md5')
-var mime = require('mime-types')
+import { Upload } from '@aws-sdk/lib-storage'
+import { S3 } from '@aws-sdk/client-s3'
+import AdmZip from 'adm-zip'
+import fs from 'fs'
+import md5 from 'md5'
+import mime from 'mime-types'
 
-var decompress = function (/* String */command, /* Function */ cb) {
-  const targetBucket = Object.prototype.hasOwnProperty.call(command, 'targetBucket') ? command.targetBucket : command.bucket
-  let targetFolder = Object.prototype.hasOwnProperty.call(command, 'targetFolder') ? command.targetFolder : ''
-  if (targetFolder.length > 0) targetFolder += '/'
-  if (!command.bucket || !command.file) { // bucket and file are required
-    if (cb) cb(new Error('Error: missing either bucket name, full filename, targetBucket or targetKey!'))
-    else console.error('Error: missing either bucket name, full filename, targetBucket or targetKey!')
+const s3 = new S3()
+
+export const decompress = async (command) => {
+  const targetBucket = command.targetBucket ?? command.bucket
+  let targetFolder = command.targetFolder ?? ''
+  if (targetFolder.length > 0) {
+    targetFolder += '/'
+  }
+
+  if (!command.bucket || !command.file) {
+    // bucket and file are required
+    console.error('Error: missing either bucket name, full filename, targetBucket or targetKey!')
+
     return
   }
 
-  s3.getObject({
-    Bucket: command.bucket,
-    Key: command.file
-  }, function (err, data) {
-    if (err) {
-      if (cb) cb(new Error('File Error: ' + err.message))
-      else console.error('File Error: ' + err.message)
-    } else {
-      if (command.verbose) console.log('Zip file \'' + command.file + '\' found in S3 bucket!')
+  try {
+    const data = await s3.getObject({
+      Bucket: command.bucket,
+      Key: command.file,
+    })
 
-      var metadata = {}
-      if (command.copyMetadata) {
-        metadata = data.Metadata
-        console.log('zip metadata', metadata)
-      }
+    if (command.verbose) {
+      console.log(`Zip file '${command.file}' found in S3 bucket!`)
+    }
 
-      // write the zip file locally in a tmp dir
-      var tmpZipFilename = md5(dateTime({ showMilliseconds: true }))
-      fs.writeFileSync('/tmp/' + tmpZipFilename + '.zip', data.Body)
+    let metadata = {}
+    if (command.copyMetadata) {
+      metadata = data.Metadata
+      console.log('zip metadata', metadata)
+    }
 
-      // check that file in that location is a zip content type, otherwise throw error and exit
-      if (mime.lookup('/tmp/' + tmpZipFilename + '.zip') !== 'application/zip') {
-        if (cb) cb(new Error('Error: file is not of type zip. Please select a valid file (filename.zip).'))
-        else console.error('Error: file is not of type zip. Please select a valid file (filename.zip).')
-        fs.unlinkSync('/tmp/' + tmpZipFilename + '.zip')
-        return
-      }
+    // write the zip file locally in a tmp dir
+    const tmpZipFilename = md5(new Date().getTime())
+    fs.writeFileSync(`/tmp/${tmpZipFilename}.zip`, Buffer.concat(await data.Body.toArray()))
 
-      var zip, zipEntries, zipEntryCount
-      // find all files in the zip and the count of them
-      try {
-        zip = new AdmZip('/tmp/' + tmpZipFilename + '.zip')
-        zipEntries = zip.getEntries()
-        zipEntryCount = Object.keys(zipEntries).length
-      } catch (err) {
-        cb(err)
-      }
+    // check that file in that location is a zip content type, otherwise throw error and exit
+    if (mime.lookup(`/tmp/${tmpZipFilename}.zip`) !== 'application/zip') {
+      console.error('Error: file is not of type zip. Please select a valid file (filename.zip).')
+      fs.unlinkSync(`/tmp/${tmpZipFilename}.zip`)
+
+      return
+    }
+
+    let zipEntries = []
+    let zipEntryCount = 0
+    // find all files in the zip and the count of them
+    try {
+      const zip = new AdmZip(`/tmp/${tmpZipFilename}.zip`)
+      zipEntries = zip.getEntries()
+      zipEntryCount = Object.keys(zipEntries).length
 
       // if no files found in the zip
       if (zipEntryCount === 0) {
-        if (cb) cb(new Error('Error: the zip file was empty!'))
-        else console.error('Error: the zip file was empty!')
-        fs.unlinkSync('/tmp/' + tmpZipFilename + '.zip')
+        console.error('Error: the zip file was empty!')
+        fs.unlinkSync(`/tmp/${tmpZipFilename}.zip`)
+
         return
       }
-
-      // for each file in the zip, decompress and upload it to S3; once all are uploaded, delete the tmp zip and zip on S3
-      var counter = 0
-      zipEntries.forEach(function (zipEntry) {
-        s3.upload({ Bucket: targetBucket, Key: targetFolder + zipEntry.entryName, Body: zipEntry.getData(), Metadata: metadata }, function (err, data) {
-          counter++
-
-          if (err) {
-            if (cb) cb(new Error('Upload Error: ' + err.message))
-            else console.error('Upload Error: ' + err.message)
-            fs.unlinkSync('/tmp/' + tmpZipFilename + '.zip')
-            return
-          }
-
-          if (command.verbose) console.log('File decompressed to S3: ' + data.Location)
-
-          // if all files are unzipped...
-          if (zipEntryCount === counter) {
-            // delete the tmp (local) zip file
-            fs.unlinkSync('/tmp/' + tmpZipFilename + '.zip')
-
-            if (command.verbose) console.log('Local temp zip file deleted.')
-
-            // delete the zip file up on S3
-            if (command.deleteOnSuccess) {
-              s3.deleteObject({ Bucket: command.bucket, Key: command.file }, function (err) {
-                if (err) {
-                  if (cb) cb(new Error('Delete Error: ' + err.message))
-                  else console.error('Delete Error: ' + err.message)
-                  return
-                }
-
-                if (command.verbose) console.log('S3 file \'' + command.file + '\' deleted.')
-
-                // WE GOT TO THE END
-                cb(null, 'Success!')
-              })
-            } else {
-              // WE GOT TO THE END
-              cb(null, 'Success!')
-            }
-          }
-        })
-      })
+    } catch (errZip) {
+      console.error(errZip)
     }
-  }
-  )
-}
 
-module.exports = {
-  decompress: decompress
+    // for each file in the zip, decompress and upload it to S3; once all are uploaded, delete the tmp zip and zip on S3
+    let counter = 0
+    zipEntries.forEach(async (zipEntry) => {
+      try {
+        const dataUpload = await new Upload({
+          client: s3,
+          params: {
+            Bucket: targetBucket,
+            Key: targetFolder + zipEntry.entryName,
+            Body: zipEntry.getData(),
+            Metadata: metadata,
+          },
+        }).done()
+
+        counter += 1
+
+        if (command.verbose) {
+          console.log(`File decompressed to S3: ${dataUpload.Location}`)
+        }
+
+        // if all files are unzipped...
+        if (zipEntryCount === counter) {
+          // delete the tmp (local) zip file
+          fs.unlinkSync(`/tmp/${tmpZipFilename}.zip`)
+
+          if (command.verbose) {
+            console.log('Local temp zip file deleted.')
+          }
+
+          // delete the zip file up on S3
+          if (command.deleteOnSuccess) {
+            try {
+              await s3.deleteObject({ Bucket: command.bucket, Key: command.file })
+
+              if (command.verbose) {
+                console.log(`S3 file '${command.file}' deleted.`)
+              }
+
+              console.log('Success!')
+            } catch (errDelete) {
+              console.error(`Delete Error: ${errDelete.message}`)
+            }
+          } else {
+            console.log('Success!')
+          }
+        }
+      } catch (errUpload) {
+        console.error(`Upload Error: ${errUpload.message}`)
+        fs.unlinkSync(`/tmp/${tmpZipFilename}.zip`)
+      }
+    })
+  } catch (err) {
+    console.error(`File Error: ${err.message}`)
+  }
 }
