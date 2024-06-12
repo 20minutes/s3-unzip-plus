@@ -21,15 +21,17 @@ SOFTWARE.
 */
 
 import { Upload } from '@aws-sdk/lib-storage'
-import { S3 } from '@aws-sdk/client-s3'
+import { DeleteObjectCommand, GetObjectCommand, S3Client } from '@aws-sdk/client-s3'
 import AdmZip from 'adm-zip'
 import fs from 'fs'
 import md5 from 'md5'
 import mime from 'mime-types'
 
-const s3 = new S3()
-
 export const decompress = async (command) => {
+  const client = new S3Client({
+    region: command.region,
+  })
+
   const targetBucket = command.targetBucket ?? command.bucket
   let targetFolder = command.targetFolder ?? ''
   if (targetFolder.length > 0) {
@@ -38,16 +40,18 @@ export const decompress = async (command) => {
 
   if (!command.bucket || !command.file) {
     // bucket and file are required
-    console.error('Error: missing either bucket name, full filename, targetBucket or targetKey!')
+    console.error('Error: missing either "bucket" or "file"!')
 
     return
   }
 
+  const getObject = new GetObjectCommand({
+    Bucket: command.bucket,
+    Key: command.file,
+  })
+
   try {
-    const data = await s3.getObject({
-      Bucket: command.bucket,
-      Key: command.file,
-    })
+    const data = await client.send(getObject)
 
     if (command.verbose) {
       console.log(`Zip file '${command.file}' found in S3 bucket!`)
@@ -56,7 +60,10 @@ export const decompress = async (command) => {
     let metadata = {}
     if (command.copyMetadata) {
       metadata = data.Metadata
-      console.log('zip metadata', metadata)
+
+      if (command.verbose) {
+        console.log('Zip metadata', JSON.stringify(metadata))
+      }
     }
 
     // write the zip file locally in a tmp dir
@@ -92,55 +99,64 @@ export const decompress = async (command) => {
 
     // for each file in the zip, decompress and upload it to S3; once all are uploaded, delete the tmp zip and zip on S3
     let counter = 0
-    zipEntries.forEach(async (zipEntry) => {
-      try {
-        const dataUpload = await new Upload({
-          client: s3,
-          params: {
-            Bucket: targetBucket,
-            Key: targetFolder + zipEntry.entryName,
-            Body: zipEntry.getData(),
-            Metadata: metadata,
-          },
-        }).done()
+    await Promise.all(
+      zipEntries.map(async (zipEntry) => {
+        try {
+          const dataUpload = await new Upload({
+            client,
+            params: {
+              Bucket: targetBucket,
+              Key: targetFolder + zipEntry.entryName,
+              Body: zipEntry.getData(),
+              Metadata: metadata,
+            },
+          }).done()
 
-        counter += 1
-
-        if (command.verbose) {
-          console.log(`File decompressed to S3: ${dataUpload.Location}`)
-        }
-
-        // if all files are unzipped...
-        if (zipEntryCount === counter) {
-          // delete the tmp (local) zip file
-          fs.unlinkSync(`/tmp/${tmpZipFilename}.zip`)
+          counter += 1
 
           if (command.verbose) {
-            console.log('Local temp zip file deleted.')
+            console.log(`File decompressed to S3: ${dataUpload.Location}`)
           }
 
-          // delete the zip file up on S3
-          if (command.deleteOnSuccess) {
-            try {
-              await s3.deleteObject({ Bucket: command.bucket, Key: command.file })
+          // if all files are unzipped...
+          if (zipEntryCount === counter) {
+            // delete the tmp (local) zip file
+            fs.unlinkSync(`/tmp/${tmpZipFilename}.zip`)
 
-              if (command.verbose) {
-                console.log(`S3 file '${command.file}' deleted.`)
-              }
-
-              console.log('Success!')
-            } catch (errDelete) {
-              console.error(`Delete Error: ${errDelete.message}`)
+            if (command.verbose) {
+              console.log('Local temp zip file deleted.')
             }
-          } else {
-            console.log('Success!')
+
+            // delete the zip file up on S3
+            if (command.deleteOnSuccess) {
+              const deleteObject = new DeleteObjectCommand({
+                Bucket: command.bucket,
+                Key: command.file,
+              })
+              try {
+                await client.send(deleteObject)
+
+                if (command.verbose) {
+                  console.log(`S3 file '${command.file}' deleted.`)
+                }
+
+                console.log('Success!')
+              } catch (errDelete) {
+                console.error(`Delete Error: ${errDelete.message}`)
+              }
+            } else {
+              console.log('Success!')
+            }
           }
+        } catch (errUpload) {
+          console.error(errUpload)
+          console.error(`Upload Error: ${errUpload.message}`)
+          fs.unlinkSync(`/tmp/${tmpZipFilename}.zip`)
         }
-      } catch (errUpload) {
-        console.error(`Upload Error: ${errUpload.message}`)
-        fs.unlinkSync(`/tmp/${tmpZipFilename}.zip`)
-      }
-    })
+
+        return true
+      })
+    )
   } catch (err) {
     console.error(`File Error: ${err.message}`)
   }
