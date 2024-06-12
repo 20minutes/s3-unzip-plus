@@ -20,14 +20,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import { readFile } from 'fs/promises'
-import { program } from 'commander'
+const { program } = require('commander')
 // eslint-disable-next-line import/extensions
-import s3UnzipPlus from '../index.js'
+const s3UnzipPlus = require('../lib/index.js')
+const pkg = require('../package.json')
 
 async function run() {
-  const pkg = JSON.parse(await readFile(new URL('../package.json', import.meta.url)))
-
   program.description(pkg.description).version(pkg.version)
 
   program
@@ -42,7 +40,7 @@ async function run() {
     .option('-v --verbose', 'Show all console logs')
     .parse()
 
-  await s3UnzipPlus(program)
+  await s3UnzipPlus.default(program)
 }
 
 run()
