@@ -1,6 +1,6 @@
 {
   "name": "@20minutes/s3-unzip-plus",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Utility for unzipping a compressed (application/zip) file from a S3 bucket's root directory back to the same bucket.",
   "keywords": [
     "s3",
