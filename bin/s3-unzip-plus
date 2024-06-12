@@ -40,7 +40,30 @@ async function run() {
     .option('-v --verbose', 'Show all console logs')
     .parse()
 
-  await s3UnzipPlus.default(program)
+  let bucket
+  let file
+  let targetBucket
+  let targetFolder
+  if (program.args && program.args.length >= 2) {
+    ;[bucket, file, targetBucket, targetFolder] = program.args
+  }
+
+  if (!targetBucket) {
+    targetBucket = bucket
+  }
+  if (!targetFolder) {
+    targetFolder = ''
+  }
+
+  await s3UnzipPlus.default({
+    bucket,
+    file,
+    targetBucket,
+    targetFolder,
+    deleteOnSuccess: program.opts().deleteOnSuccess ?? false,
+    copyMetadata: program.opts().copyMetadata ?? false,
+    verbose: program.opts().verbose ?? false,
+  })
 }
 
 run()

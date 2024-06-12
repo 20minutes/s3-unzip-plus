@@ -23,30 +23,23 @@ SOFTWARE.
 // eslint-disable-next-line import/extensions
 import { decompress } from './util.js'
 
-export default async (command) => {
-  let bucket
-  let file
-  let targetBucket
-  let targetFolder
-  if (command.args && command.args.length >= 2) {
-    ;[bucket, file, targetBucket, targetFolder] = command.args
-  }
-
-  if (!targetBucket) {
-    targetBucket = bucket
-  }
-  if (!targetFolder) {
-    targetFolder = ''
-  }
-
+export default async ({
+  bucket,
+  file,
+  targetBucket = null,
+  targetFolder = null,
+  deleteOnSuccess = false,
+  copyMetadata = false,
+  verbose = false,
+}) => {
   await decompress({
     bucket,
     file,
-    targetBucket,
-    targetFolder,
-    deleteOnSuccess: command.opts().deleteOnSuccess ?? false,
-    copyMetadata: command.opts().copyMetadata ?? false,
-    verbose: command.opts().verbose ?? false,
+    targetBucket: targetBucket ?? bucket,
+    targetFolder: targetFolder ?? '',
+    deleteOnSuccess: !!deleteOnSuccess,
+    copyMetadata: !!copyMetadata,
+    verbose: !!verbose,
   })
 }
 
