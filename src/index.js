@@ -31,6 +31,7 @@ export default async ({
   deleteOnSuccess = false,
   copyMetadata = false,
   verbose = false,
+  region = null,
 }) => {
   await decompress({
     bucket,
@@ -40,6 +41,7 @@ export default async ({
     deleteOnSuccess: !!deleteOnSuccess,
     copyMetadata: !!copyMetadata,
     verbose: !!verbose,
+    region,
   })
 }
 

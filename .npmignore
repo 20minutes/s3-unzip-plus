@@ -4,3 +4,5 @@
 .nvmrc
 babel.config.js
 src
+tests
+jest.config.js

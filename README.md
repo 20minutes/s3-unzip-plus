@@ -22,7 +22,7 @@ await s3UnzipPlus({
   bucket: 'test-bucket-in-s3',
   file: 'Companies.zip',
   targetBucket: 'test-output-bucket',
-  targetKey: 'test-folder',
+  targetFolder: 'test-folder',
   copyMetadata: true,
   deleteOnSuccess: true,
   verbose: false
