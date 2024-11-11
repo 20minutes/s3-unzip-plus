@@ -74,7 +74,7 @@
   dependencies:
     tslib "^2.6.2"
 
-"@aws-crypto/util@^5.2.0":
+"@aws-crypto/util@5.2.0", "@aws-crypto/util@^5.2.0":
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/@aws-crypto/util/-/util-5.2.0.tgz#71284c9cffe7927ddadac793c14f14886d3876da"
   integrity sha512-4RkU9EsI6ZpBve5fseQlGNUWKMa1RLPQ1dnjnQoe07ldfIzcsGb5hC5W0Dm7u423KWzawlrpbjXBrXCEv9zazQ==
@@ -83,10 +83,10 @@
     "@smithy/util-utf8" "^2.0.0"
     tslib "^2.6.2"
 
-"@aws-sdk/client-s3@^3.687.0":
-  version "3.687.0"
-  resolved "https://registry.yarnpkg.com/@aws-sdk/client-s3/-/client-s3-3.687.0.tgz#b194c1c3e51b6d464a90363b616c91419ec88b88"
-  integrity sha512-2IoaVAd7HCIDhfeTTrk8CAosEVqnQig47Tra2uOBEyzpcCFQLmcY57/sbHCpJ3ntnU8see53q0bQ+fdew4MGLA==
+"@aws-sdk/client-s3@^3.688.0":
+  version "3.688.0"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/client-s3/-/client-s3-3.688.0.tgz#4326e6e7cc6d792bb085b6da7d45b80eeb394e83"
+  integrity sha512-bLyF7gT0RTWrsJPxbaslg1xP1gUdw3BJVvgfWM/63BDBpVCqIk9YlrXfJwjImcKguxGp8sCTdttywmfdPwQEfg==
   dependencies:
     "@aws-crypto/sha1-browser" "5.2.0"
     "@aws-crypto/sha256-browser" "5.2.0"
@@ -97,7 +97,7 @@
     "@aws-sdk/credential-provider-node" "3.687.0"
     "@aws-sdk/middleware-bucket-endpoint" "3.686.0"
     "@aws-sdk/middleware-expect-continue" "3.686.0"
-    "@aws-sdk/middleware-flexible-checksums" "3.687.0"
+    "@aws-sdk/middleware-flexible-checksums" "3.688.0"
     "@aws-sdk/middleware-host-header" "3.686.0"
     "@aws-sdk/middleware-location-constraint" "3.686.0"
     "@aws-sdk/middleware-logger" "3.686.0"
@@ -399,10 +399,10 @@
     "@smithy/types" "^3.6.0"
     tslib "^2.6.2"
 
-"@aws-sdk/lib-storage@^3.687.0":
-  version "3.687.0"
-  resolved "https://registry.yarnpkg.com/@aws-sdk/lib-storage/-/lib-storage-3.687.0.tgz#017dd7d9702f0d40594b739e01a83cfaec6ccac2"
-  integrity sha512-LAJOH1Ddm8vlA6j8WyFAt1Ithfj58XuJN1d2WJSDZLhGDGQp3+nDFzovOKODw/Bc9x6ZnDYm9rE+QMTbGSvqkA==
+"@aws-sdk/lib-storage@^3.688.0":
+  version "3.688.0"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/lib-storage/-/lib-storage-3.688.0.tgz#d9afce1834df2376ad010d89888a9d2a3a3cd8f1"
+  integrity sha512-pmxjyuHEaIbYmRIN0EWTfmPgJ+XjP1GHD+2C68fk8+6CGbDFKIwq0PaatyiKq5Vt080qCpQxzkTOZn6GiB8CRQ==
   dependencies:
     "@smithy/abort-controller" "^3.1.5"
     "@smithy/middleware-endpoint" "^3.2.1"
@@ -435,13 +435,14 @@
     "@smithy/types" "^3.6.0"
     tslib "^2.6.2"
 
-"@aws-sdk/middleware-flexible-checksums@3.687.0":
-  version "3.687.0"
-  resolved "https://registry.yarnpkg.com/@aws-sdk/middleware-flexible-checksums/-/middleware-flexible-checksums-3.687.0.tgz#e6f587e8fc685dc92bd6bdc6ecf051dab419d184"
-  integrity sha512-hsEr3eiJs7gOzj9nDMCMfhLkoYv4Z8m7fbic63TkeyimXvsHycqqF6PX0TkPykwa1ueyxVpz0vtO5u1rlucN2w==
+"@aws-sdk/middleware-flexible-checksums@3.688.0":
+  version "3.688.0"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/middleware-flexible-checksums/-/middleware-flexible-checksums-3.688.0.tgz#6246dd7aba8c36135ea3e962386824e26c1cf476"
+  integrity sha512-diIBWLpM5eg3sRggKSKGUJGBh8VyFo/wZLq80GSq1kxGlmJOMvwT6YvE+Z51xhEbYTKIjX9IH/NhO7W4pA3MNw==
   dependencies:
     "@aws-crypto/crc32" "5.2.0"
     "@aws-crypto/crc32c" "5.2.0"
+    "@aws-crypto/util" "5.2.0"
     "@aws-sdk/core" "3.686.0"
     "@aws-sdk/types" "3.686.0"
     "@smithy/is-array-buffer" "^3.0.0"
