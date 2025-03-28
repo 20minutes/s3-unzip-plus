@@ -38,7 +38,7 @@
     "mime-types": "^2.1.16"
   },
   "devDependencies": {
-    "@20minutes/eslint-config": "^1.2.6",
+    "@20minutes/eslint-config": "^1.2.7",
     "@babel/cli": "^7.27.0",
     "@babel/core": "^7.26.10",
     "@babel/eslint-parser": "^7.27.0",
