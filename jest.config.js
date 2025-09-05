@@ -2,8 +2,8 @@
 const config = {
   verbose: true,
   testEnvironment: 'node',
-  "transform": {
-    "^.+\\.(js)$": "babel-jest"
+  transform: {
+    '^.+\\.(js)$': 'babel-jest',
   },
 }
 
