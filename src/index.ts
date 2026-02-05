@@ -22,16 +22,38 @@ SOFTWARE.
 
 import { decompress } from './util.js'
 
-export default async ({
-  bucket,
-  file,
-  targetBucket = null,
-  targetFolder = null,
-  deleteOnSuccess = false,
-  copyMetadata = false,
-  verbose = false,
-  region = null,
-}) => {
+export type DecompressOptions = {
+  bucket?: string
+  file?: string
+  targetBucket?: string | null
+  targetFolder?: string | null
+  deleteOnSuccess?: boolean
+  copyMetadata?: boolean
+  verbose?: boolean
+  region?: string | null
+}
+
+export type S3Event = {
+  Records: Array<{
+    s3: {
+      bucket: { name: string }
+      object: { key: string }
+    }
+  }>
+}
+
+export default async (options: DecompressOptions): Promise<void> => {
+  const {
+    bucket,
+    file,
+    targetBucket = null,
+    targetFolder = null,
+    deleteOnSuccess = false,
+    copyMetadata = false,
+    verbose = false,
+    region = null,
+  } = options
+
   await decompress({
     bucket,
     file,
@@ -44,7 +66,7 @@ export default async ({
   })
 }
 
-export const handler = async (event) => {
+export const handler = async (event: S3Event): Promise<void> => {
   await decompress({
     bucket: event.Records[0].s3.bucket.name,
     file: event.Records[0].s3.object.key,
