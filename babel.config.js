@@ -1,10 +1,35 @@
 module.exports = {
-  presets: ['@babel/env'],
-  plugins: ['@babel/transform-runtime'],
+  presets: [
+    [
+      '@babel/preset-env',
+      {
+        modules: 'commonjs',
+      },
+    ],
+  ],
+  plugins: ['@babel/plugin-transform-runtime'],
   env: {
+    cjs: {
+      presets: [
+        [
+          '@babel/preset-env',
+          {
+            modules: 'commonjs',
+          },
+        ],
+      ],
+      plugins: ['@babel/plugin-transform-runtime'],
+    },
     esm: {
-      presets: [['@babel/env', { modules: false }]],
-      plugins: [['@babel/transform-runtime', { useESModules: true }]],
+      presets: [
+        [
+          '@babel/preset-env',
+          {
+            modules: false,
+          },
+        ],
+      ],
+      plugins: ['@babel/plugin-transform-runtime'],
     },
   },
 }
