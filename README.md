@@ -1,5 +1,8 @@
 # S3 Unzip Plus #
 
+[![Build status](https://github.com/20minutes/s3-unzip-plus/actions/workflows/tests.yml/badge.svg)](https://github.com/20minutes/s3-unzip-plus/actions/workflows/tests.yml)
+[![NPM](https://img.shields.io/npm/v/@20minutes/s3-unzip-plus)](https://www.npmjs.com/package/@20minutes/s3-unzip-plus)
+
 Forked version to:
 - remove old AWS SDK v2
 - add AWS SDK v3
@@ -12,6 +15,8 @@ For the official readme, check the [official project](https://github.com/akapuya
 ```
 yarn add @20minutes/s3-unzip-plus
 ```
+
+Requires Node.js 22 or newer.
 
 ### Library Usage ###
 

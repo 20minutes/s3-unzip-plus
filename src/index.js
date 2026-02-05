@@ -20,7 +20,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-// eslint-disable-next-line import/extensions
 import { decompress } from './util.js'
 
 export default async ({

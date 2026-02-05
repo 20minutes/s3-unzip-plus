@@ -1,6 +1,6 @@
 {
   "name": "@20minutes/s3-unzip-plus",
-  "version": "1.1.5",
+  "version": "1.2.0",
   "description": "Utility for unzipping a compressed (application/zip) file from a S3 bucket's root directory back to the same bucket.",
   "keywords": [
     "s3",
@@ -10,6 +10,12 @@
   ],
   "main": "lib/index.js",
   "module": "esm/index.js",
+  "exports": {
+    ".": {
+      "import": "./esm/index.js",
+      "require": "./lib/index.js"
+    }
+  },
   "bin": {
     "s3-unzip-plus": "bin/s3-unzip-plus"
   },
@@ -29,6 +35,9 @@
   },
   "author": "Avi Kapuya",
   "license": "MIT",
+  "engines": {
+    "node": ">=22"
+  },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.983.0",
     "@aws-sdk/lib-storage": "^3.983.0",
@@ -38,25 +47,23 @@
     "mime-types": "^3.0.2"
   },
   "devDependencies": {
-    "@20minutes/eslint-config": "^1.2.7",
+    "@20minutes/eslint-config": "^2.0.0",
     "@babel/cli": "^7.28.6",
     "@babel/core": "^7.29.0",
     "@babel/eslint-parser": "^7.28.6",
     "@babel/plugin-transform-runtime": "^7.29.0",
     "@babel/preset-env": "^7.29.0",
     "@babel/runtime": "^7.28.6",
-    "@eslint/eslintrc": "^3.3.3",
-    "@eslint/js": "^9.39.2",
     "aws-sdk-client-mock": "^4.1.0",
     "aws-sdk-client-mock-jest": "^4.1.0",
-    "eslint": "8",
-    "eslint-config-airbnb": "^19.0.4",
+    "eslint": "^9.0.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-babel": "^5.3.1",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-prettier": "^5.5.5",
     "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.0.1",
     "jest": "^30.2.0",
     "prettier": "^3.8.1",
     "rimraf": "^6.1.2"
