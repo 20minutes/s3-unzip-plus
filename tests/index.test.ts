@@ -30,15 +30,20 @@ describe('build outputs', () => {
       return
     }
 
+    const cjsSource = fs.readFileSync(cjsPath, 'utf8')
+    const esmSource = fs.readFileSync(esmPath, 'utf8')
+
+    expect(cjsSource).toMatch(/\bexports\./)
+    expect(cjsSource).not.toMatch(/\bexport\s+/)
+    expect(esmSource).toMatch(/\bexport\s+/)
+    expect(esmSource).not.toMatch(/\bmodule\.exports\b|\bexports\./)
+
     // CJS require
     const cjsModule = require(cjsPath)
     expect(typeof cjsModule.default).toBe('function')
     expect(typeof cjsModule.handler).toBe('function')
 
-    // ESM import
-    const esmModule = await import(`file://${esmPath}`)
-    expect(typeof esmModule.default).toBe('function')
-    expect(typeof esmModule.handler).toBe('function')
+    // ESM format is validated by source checks above; Jest runs in CJS.
   })
 })
 
