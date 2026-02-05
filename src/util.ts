@@ -27,22 +27,37 @@ import fs from 'fs'
 import md5 from 'md5'
 import mime from 'mime-types'
 
-export const decompress = async (command) => {
-  const client = new S3Client({
-    region: command.region,
-  })
+export type DecompressCommand = {
+  bucket?: string
+  file?: string
+  targetBucket?: string
+  targetFolder?: string
+  deleteOnSuccess?: boolean
+  copyMetadata?: boolean
+  verbose?: boolean
+  region?: string | null
+}
 
-  const targetBucket = command.targetBucket ?? command.bucket
-  let targetFolder = command.targetFolder ?? ''
-  if (targetFolder.length > 0) {
-    targetFolder += '/'
-  }
+type BodyWithToArray = {
+  toArray: () => Promise<Uint8Array[]>
+}
+
+export const decompress = async (command: DecompressCommand): Promise<void> => {
+  const client = new S3Client({
+    region: command.region ?? undefined,
+  })
 
   if (!command.bucket || !command.file) {
     // bucket and file are required
     console.error('Error: missing either "bucket" or "file"!')
 
     return
+  }
+
+  const targetBucket = command.targetBucket ?? command.bucket
+  let targetFolder = command.targetFolder ?? ''
+  if (targetFolder.length > 0) {
+    targetFolder += '/'
   }
 
   const getObject = new GetObjectCommand({
@@ -57,18 +72,26 @@ export const decompress = async (command) => {
       console.log(`Zip file '${command.file}' found in S3 bucket!`)
     }
 
-    let metadata = {}
+    let metadata: Record<string, string> = {}
     if (command.copyMetadata) {
-      metadata = data.Metadata
+      metadata = (data.Metadata ?? {}) as Record<string, string>
 
       if (command.verbose) {
         console.log('Zip metadata', JSON.stringify(metadata))
       }
     }
 
+    const body = data.Body as BodyWithToArray | undefined
+    if (!body?.toArray) {
+      console.error('Error: missing S3 body data.')
+
+      return
+    }
+
     // write the zip file locally in a tmp dir
-    const tmpZipFilename = md5(new Date().getTime())
-    fs.writeFileSync(`/tmp/${tmpZipFilename}.zip`, Buffer.concat(await data.Body.toArray()))
+    const tmpZipFilename = md5(String(Date.now()))
+    const chunks = await body.toArray()
+    fs.writeFileSync(`/tmp/${tmpZipFilename}.zip`, Buffer.concat(chunks))
 
     // check that file in that location is a zip content type, otherwise throw error and exit
     if (mime.lookup(`/tmp/${tmpZipFilename}.zip`) !== 'application/zip') {
@@ -78,12 +101,12 @@ export const decompress = async (command) => {
       return
     }
 
-    let zipEntries = []
+    let zipEntries: Array<{ entryName: string; getData: () => Buffer }> = []
     let zipEntryCount = 0
     // find all files in the zip and the count of them
     try {
       const zip = new AdmZip(`/tmp/${tmpZipFilename}.zip`)
-      zipEntries = zip.getEntries()
+      zipEntries = zip.getEntries() as Array<{ entryName: string; getData: () => Buffer }>
       zipEntryCount = Object.keys(zipEntries).length
 
       // if no files found in the zip
@@ -142,7 +165,8 @@ export const decompress = async (command) => {
 
                 console.log('Success!')
               } catch (errDelete) {
-                console.error(`Delete Error: ${errDelete.message}`)
+                const message = (errDelete as Error).message
+                console.error(`Delete Error: ${message}`)
               }
             } else {
               console.log('Success!')
@@ -150,7 +174,8 @@ export const decompress = async (command) => {
           }
         } catch (errUpload) {
           console.error(errUpload)
-          console.error(`Upload Error: ${errUpload.message}`)
+          const message = (errUpload as Error).message
+          console.error(`Upload Error: ${message}`)
           fs.unlinkSync(`/tmp/${tmpZipFilename}.zip`)
         }
 
@@ -158,6 +183,7 @@ export const decompress = async (command) => {
       })
     )
   } catch (err) {
-    console.error(`File Error: ${err.message}`)
+    const message = (err as Error).message
+    console.error(`File Error: ${message}`)
   }
 }

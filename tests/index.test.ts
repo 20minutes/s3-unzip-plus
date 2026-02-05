@@ -1,4 +1,6 @@
 import fs from 'fs'
+import { Readable } from 'stream'
+import { sdkStreamMixin } from '@smithy/util-stream'
 import { mockClient } from 'aws-sdk-client-mock'
 import 'aws-sdk-client-mock-jest'
 import {
@@ -10,6 +12,35 @@ import {
 import s3UnzipPlus from '../src'
 
 const s3Mock = mockClient(S3Client)
+
+const createBody = (path: string) => {
+  const stream = Readable.from([fs.readFileSync(path)])
+  return sdkStreamMixin(stream)
+}
+
+describe('build outputs', () => {
+  it('should expose CJS and ESM entrypoints when built', async () => {
+    const cjsPath = `${process.cwd()}/lib/index.js`
+    const esmPath = `${process.cwd()}/esm/index.js`
+
+    const hasCjs = fs.existsSync(cjsPath)
+    const hasEsm = fs.existsSync(esmPath)
+    if (!hasCjs || !hasEsm) {
+      // Build artifacts not present; skip this check in dev/test without build
+      return
+    }
+
+    // CJS require
+    const cjsModule = require(cjsPath)
+    expect(typeof cjsModule.default).toBe('function')
+    expect(typeof cjsModule.handler).toBe('function')
+
+    // ESM import
+    const esmModule = await import(`file://${esmPath}`)
+    expect(typeof esmModule.default).toBe('function')
+    expect(typeof esmModule.handler).toBe('function')
+  })
+})
 
 describe('s3-unzip-plus', () => {
   beforeEach(() => {
@@ -23,11 +54,7 @@ describe('s3-unzip-plus', () => {
         Key: 'Companies.zip',
       })
       .resolves({
-        Body: {
-          async toArray() {
-            return [fs.readFileSync('tests/fixtures/t.zip')]
-          },
-        },
+        Body: createBody('tests/fixtures/t.zip'),
         Metadata: {
           Expires: 'Wed, 21 Oct 2015 07:28:00 GMT',
         },
@@ -71,11 +98,7 @@ describe('s3-unzip-plus', () => {
         Key: 'Companies.zip',
       })
       .resolves({
-        Body: {
-          async toArray() {
-            return [fs.readFileSync('tests/fixtures/t.zip')]
-          },
-        },
+        Body: createBody('tests/fixtures/t.zip'),
         Metadata: {
           Expires: 'Wed, 21 Oct 2015 07:28:00 GMT',
         },
@@ -119,11 +142,7 @@ describe('s3-unzip-plus', () => {
         Key: 'Companies.zip',
       })
       .resolves({
-        Body: {
-          async toArray() {
-            return [fs.readFileSync('tests/fixtures/t.zip')]
-          },
-        },
+        Body: createBody('tests/fixtures/t.zip'),
         Metadata: {
           Expires: 'Wed, 21 Oct 2015 07:28:00 GMT',
         },
@@ -162,11 +181,7 @@ describe('s3-unzip-plus', () => {
         Key: 'Companies.zip',
       })
       .resolves({
-        Body: {
-          async toArray() {
-            return [fs.readFileSync('tests/fixtures/t.zip')]
-          },
-        },
+        Body: createBody('tests/fixtures/t.zip'),
         Metadata: {
           Expires: 'Wed, 21 Oct 2015 07:28:00 GMT',
         },
@@ -204,11 +219,7 @@ describe('s3-unzip-plus', () => {
         Key: 'Companies.zip',
       })
       .resolves({
-        Body: {
-          async toArray() {
-            return [fs.readFileSync('tests/fixtures/t.zip')]
-          },
-        },
+        Body: createBody('tests/fixtures/t.zip'),
         Metadata: {
           Expires: 'Wed, 21 Oct 2015 07:28:00 GMT',
         },
