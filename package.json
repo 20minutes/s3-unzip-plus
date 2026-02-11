@@ -49,7 +49,7 @@
   },
   "devDependencies": {
     "@20minutes/eslint-config": "^2.0.0",
-    "@smithy/util-stream": "^4.5.11",
+    "@smithy/util-stream": "^4.5.12",
     "@types/adm-zip": "^0.5.5",
     "@types/jest": "^30.0.0",
     "@types/md5": "^2.3.5",
