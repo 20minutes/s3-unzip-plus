@@ -40,8 +40,8 @@
     "node": ">=22"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.987.0",
-    "@aws-sdk/lib-storage": "^3.987.0",
+    "@aws-sdk/client-s3": "^3.992.0",
+    "@aws-sdk/lib-storage": "^3.992.0",
     "adm-zip": "^0.5.16",
     "commander": "^14.0.3",
     "md5": "^2.2.1",
