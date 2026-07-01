@@ -1479,10 +1479,10 @@ acorn@^8.15.0:
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-8.15.0.tgz#a360898bc415edaac46c8241f6383975b930b816"
   integrity sha512-NZyJarBfL7nWwIq+FDL6Zp/yHEhePMNnnJ0y3qfieCrmNvYct8uvtiV41UvlSe6apAfk0fY1FbWx+NwfmpvtTg==
 
-adm-zip@^0.5.17:
-  version "0.5.17"
-  resolved "https://registry.yarnpkg.com/adm-zip/-/adm-zip-0.5.17.tgz#5c0b65f37aeec5c2a94995c024f931f62e4bbc5a"
-  integrity sha512-+Ut8d9LLqwEvHHJl1+PIHqoyDxFgVN847JTVM3Izi3xHDWPE4UtzzXysMZQs64DMcrJfBeS/uoEP4AD3HQHnQQ==
+adm-zip@^0.5.18:
+  version "0.5.18"
+  resolved "https://registry.yarnpkg.com/adm-zip/-/adm-zip-0.5.18.tgz#283a05f2bf1e3fd315f0f31cde29b7a6e3c1619d"
+  integrity sha512-ufJnssQGbxzLNS1Ho9bCtX4rQKCCvoVuDLHoJyc3F9dOGDB4BkWs2Ci0kv53lqocAEQ/Cbi+I2XCsNYGqVYqng==
 
 ajv@^6.12.4:
   version "6.12.6"
