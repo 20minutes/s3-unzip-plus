@@ -20,10 +20,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import { Upload } from '@aws-sdk/lib-storage'
+import fs from 'node:fs'
 import { DeleteObjectCommand, GetObjectCommand, S3Client } from '@aws-sdk/client-s3'
+import { Upload } from '@aws-sdk/lib-storage'
 import AdmZip from 'adm-zip'
-import fs from 'fs'
 import md5 from 'md5'
 import mime from 'mime-types'
 
@@ -69,7 +69,7 @@ export const decompress = async (command: DecompressCommand): Promise<void> => {
     const data = await client.send(getObject)
 
     if (command.verbose) {
-      console.log(`Zip file '${command.file}' found in S3 bucket!`)
+      console.info(`Zip file '${command.file}' found in S3 bucket!`)
     }
 
     let metadata: Record<string, string> = {}
@@ -77,7 +77,7 @@ export const decompress = async (command: DecompressCommand): Promise<void> => {
       metadata = (data.Metadata ?? {}) as Record<string, string>
 
       if (command.verbose) {
-        console.log('Zip metadata', JSON.stringify(metadata))
+        console.info('Zip metadata', JSON.stringify(metadata))
       }
     }
 
@@ -138,7 +138,7 @@ export const decompress = async (command: DecompressCommand): Promise<void> => {
           counter += 1
 
           if (command.verbose) {
-            console.log(`File decompressed to S3: ${dataUpload.Location}`)
+            console.info(`File decompressed to S3: ${dataUpload.Location}`)
           }
 
           // if all files are unzipped...
@@ -147,7 +147,7 @@ export const decompress = async (command: DecompressCommand): Promise<void> => {
             fs.unlinkSync(`/tmp/${tmpZipFilename}.zip`)
 
             if (command.verbose) {
-              console.log('Local temp zip file deleted.')
+              console.info('Local temp zip file deleted.')
             }
 
             // delete the zip file up on S3
@@ -160,16 +160,16 @@ export const decompress = async (command: DecompressCommand): Promise<void> => {
                 await client.send(deleteObject)
 
                 if (command.verbose) {
-                  console.log(`S3 file '${command.file}' deleted.`)
+                  console.info(`S3 file '${command.file}' deleted.`)
                 }
 
-                console.log('Success!')
+                console.info('Success!')
               } catch (errDelete) {
                 const message = (errDelete as Error).message
                 console.error(`Delete Error: ${message}`)
               }
             } else {
-              console.log('Success!')
+              console.info('Success!')
             }
           }
         } catch (errUpload) {

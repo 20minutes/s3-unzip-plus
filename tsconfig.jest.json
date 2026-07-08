@@ -3,9 +3,15 @@
   "compilerOptions": {
     "module": "CommonJS",
     "moduleResolution": "Node",
-    "types": ["jest", "node"],
+    "types": [
+      "jest",
+      "node"
+    ],
     "noEmit": true,
     "verbatimModuleSyntax": false
   },
-  "include": ["src/**/*", "tests/**/*"]
+  "include": [
+    "src/**/*",
+    "tests/**/*"
+  ]
 }

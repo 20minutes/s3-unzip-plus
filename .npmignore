@@ -3,7 +3,7 @@
 .nvmrc
 node_modules
 coverage
-eslint.config.mjs
+biome.jsonc
 src
 tests
 jest.config.js

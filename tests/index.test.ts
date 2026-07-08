@@ -1,5 +1,5 @@
-import fs from 'fs'
-import { Readable } from 'stream'
+import fs from 'node:fs'
+import { Readable } from 'node:stream'
 import { sdkStreamMixin } from '@smithy/util-stream'
 import { mockClient } from 'aws-sdk-client-mock'
 import 'aws-sdk-client-mock-jest'
