@@ -20,32 +20,40 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-const { program } = require('commander')
-const s3UnzipPlus = require('../lib/index.js')
+const { cli } = require('cleye')
 const pkg = require('../package.json')
 
 async function run() {
-  program.description(pkg.description).version(pkg.version)
+  const argv = cli({
+    name: 's3-unzip-plus',
+    version: pkg.version,
+    parameters: ['<bucket-name>', '<filename>', '[target-bucket]', '[target-folder]'],
+    flags: {
+      deleteOnSuccess: {
+        type: Boolean,
+        alias: 'd',
+        description: 'Delete the zip file on S3 once the decompression has finished',
+      },
+      copyMetadata: {
+        type: Boolean,
+        alias: 'm',
+        description: 'Copy S3 metadata from zip file to unzipped files',
+      },
+      verbose: {
+        type: Boolean,
+        alias: 'v',
+        description: 'Show all console logs',
+      },
+    },
+    help: {
+      description: pkg.description,
+    },
+  })
 
-  program
-    .usage('[options] <S3 bucket name> <filename>')
-    .argument('<bucket-name>', 'S3 bucket name')
-    .argument('<filename>', 'filename')
-    .option(
-      '-d --delete-on-success',
-      'Delete the zip file on S3 once the decompression has finished'
-    )
-    .option('-m --copy-metadata', 'Copy S3 metadata from zip file to unzipped files')
-    .option('-v --verbose', 'Show all console logs')
-    .parse()
-
-  let bucket
-  let file
-  let targetBucket
-  let targetFolder
-  if (program.args && program.args.length >= 2) {
-    ;[bucket, file, targetBucket, targetFolder] = program.args
-  }
+  const bucket = argv._.bucketName
+  const file = argv._.filename
+  let targetBucket = argv._.targetBucket
+  let targetFolder = argv._.targetFolder
 
   if (!targetBucket) {
     targetBucket = bucket
@@ -54,14 +62,15 @@ async function run() {
     targetFolder = ''
   }
 
+  const s3UnzipPlus = require('../lib/index.js')
   await s3UnzipPlus.default({
     bucket,
     file,
     targetBucket,
     targetFolder,
-    deleteOnSuccess: program.opts().deleteOnSuccess ?? false,
-    copyMetadata: program.opts().copyMetadata ?? false,
-    verbose: program.opts().verbose ?? false,
+    deleteOnSuccess: argv.flags.deleteOnSuccess ?? false,
+    copyMetadata: argv.flags.copyMetadata ?? false,
+    verbose: argv.flags.verbose ?? false,
   })
 }
 
