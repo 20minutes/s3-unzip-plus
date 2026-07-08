@@ -21,7 +21,6 @@ SOFTWARE.
 */
 
 const { program } = require('commander')
-// eslint-disable-next-line import/extensions
 const s3UnzipPlus = require('../lib/index.js')
 const pkg = require('../package.json')
 

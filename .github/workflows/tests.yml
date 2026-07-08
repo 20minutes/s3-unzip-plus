@@ -29,6 +29,8 @@ jobs:
 
       - run: yarn build
 
-      - run: yarn lint
+      - run: yarn lint:ci
+
+      - run: yarn check:package
 
       - run: yarn test
