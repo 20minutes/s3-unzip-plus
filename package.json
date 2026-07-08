@@ -47,7 +47,6 @@
     "@aws-sdk/lib-storage": "^3.1081.0",
     "adm-zip": "^0.5.18",
     "cleye": "^2.6.0",
-    "md5": "^2.2.1",
     "mime-types": "^3.0.2"
   },
   "devDependencies": {
@@ -55,7 +54,6 @@
     "@smithy/util-stream": "^4.7.6",
     "@types/adm-zip": "^0.5.8",
     "@types/jest": "^30.0.0",
-    "@types/md5": "^2.3.5",
     "@types/mime-types": "^3.0.1",
     "@types/node": "^26.1.1",
     "aws-sdk-client-mock": "^4.1.0",
