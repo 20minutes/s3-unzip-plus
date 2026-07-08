@@ -20,11 +20,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+import { randomUUID } from 'node:crypto'
 import fs from 'node:fs'
 import { DeleteObjectCommand, GetObjectCommand, S3Client } from '@aws-sdk/client-s3'
 import { Upload } from '@aws-sdk/lib-storage'
 import AdmZip from 'adm-zip'
-import md5 from 'md5'
 import mime from 'mime-types'
 
 export type DecompressCommand = {
@@ -89,7 +89,7 @@ export const decompress = async (command: DecompressCommand): Promise<void> => {
     }
 
     // write the zip file locally in a tmp dir
-    const tmpZipFilename = md5(String(Date.now()))
+    const tmpZipFilename = randomUUID()
     const chunks = await body.toArray()
     fs.writeFileSync(`/tmp/${tmpZipFilename}.zip`, Buffer.concat(chunks))
 
