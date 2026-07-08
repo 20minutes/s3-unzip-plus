@@ -1,5 +1,8 @@
+import { execFile } from 'node:child_process'
 import fs from 'node:fs'
+import path from 'node:path'
 import { Readable } from 'node:stream'
+import { promisify } from 'node:util'
 import { sdkStreamMixin } from '@smithy/util-stream'
 import { mockClient } from 'aws-sdk-client-mock'
 import 'aws-sdk-client-mock-jest'
@@ -12,6 +15,8 @@ import {
 import s3UnzipPlus from '../src'
 
 const s3Mock = mockClient(S3Client)
+const execFileAsync = promisify(execFile)
+const binPath = path.join(process.cwd(), 'bin/s3-unzip-plus')
 
 const createBody = (path: string) => {
   const stream = Readable.from([fs.readFileSync(path)])
@@ -44,6 +49,89 @@ describe('build outputs', () => {
     expect(typeof cjsModule.handler).toBe('function')
 
     // ESM format is validated by source checks above; Jest runs in CJS.
+  })
+})
+
+describe('bin/s3-unzip-plus', () => {
+  const originalArgv = process.argv
+
+  afterEach(() => {
+    process.argv = originalArgv
+    jest.resetModules()
+    jest.dontMock('../lib/index.js')
+  })
+
+  it('should show help', async () => {
+    const { stdout } = await execFileAsync(process.execPath, [binPath, '--help'])
+
+    expect(stdout).toContain('s3-unzip-plus')
+    expect(stdout).toContain('<bucket-name>')
+    expect(stdout).toContain('[target-bucket]')
+    expect(stdout).toContain('-d, --delete-on-success')
+    expect(stdout).toContain('-m, --copy-metadata')
+    expect(stdout).toContain('-v, --verbose')
+  })
+
+  it('should show version', async () => {
+    const { stdout } = await execFileAsync(process.execPath, [binPath, '--version'])
+
+    expect(stdout.trim()).toBeDefined()
+  })
+
+  it('should pass parsed arguments and flags to the library', async () => {
+    const unzip = jest.fn().mockResolvedValue(undefined)
+
+    jest.doMock('../lib/index.js', () => ({
+      default: unzip,
+    }))
+
+    process.argv = [
+      process.execPath,
+      binPath,
+      'source-bucket',
+      'archive.zip',
+      'target-bucket',
+      'target-folder',
+      '-d',
+      '-m',
+      '-v',
+    ]
+
+    require('../bin/s3-unzip-plus')
+    await new Promise(setImmediate)
+
+    expect(unzip).toHaveBeenCalledWith({
+      bucket: 'source-bucket',
+      file: 'archive.zip',
+      targetBucket: 'target-bucket',
+      targetFolder: 'target-folder',
+      deleteOnSuccess: true,
+      copyMetadata: true,
+      verbose: true,
+    })
+  })
+
+  it('should default target bucket and target folder', async () => {
+    const unzip = jest.fn().mockResolvedValue(undefined)
+
+    jest.doMock('../lib/index.js', () => ({
+      default: unzip,
+    }))
+
+    process.argv = [process.execPath, binPath, 'source-bucket', 'archive.zip']
+
+    require('../bin/s3-unzip-plus')
+    await new Promise(setImmediate)
+
+    expect(unzip).toHaveBeenCalledWith({
+      bucket: 'source-bucket',
+      file: 'archive.zip',
+      targetBucket: 'source-bucket',
+      targetFolder: '',
+      deleteOnSuccess: false,
+      copyMetadata: false,
+      verbose: false,
+    })
   })
 })
 
