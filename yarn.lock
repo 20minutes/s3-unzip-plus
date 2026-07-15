@@ -937,7 +937,7 @@
     "@sinonjs/commons" "^3.0.1"
     type-detect "^4.1.0"
 
-"@smithy/core@^3.29.1", "@smithy/core@^3.29.3", "@smithy/core@^3.29.4":
+"@smithy/core@^3.29.3", "@smithy/core@^3.29.4":
   version "3.29.4"
   resolved "https://registry.yarnpkg.com/@smithy/core/-/core-3.29.4.tgz#ff4f9ba70e0276c892cd3dad5dbef54fc4945464"
   integrity sha512-G1GRglAabzEhqghJMBAd54FkRS7SAFGHEwbhcI9r+O+LIMuFsLyXkLZkCoFSgAglRu8s/URVXJB0hglq3ZipIg==
@@ -988,12 +988,12 @@
   dependencies:
     tslib "^2.6.2"
 
-"@smithy/util-stream@^4.7.6":
-  version "4.7.6"
-  resolved "https://registry.yarnpkg.com/@smithy/util-stream/-/util-stream-4.7.6.tgz#f5b225b921b29a77f2af92e0135284d8f50d485d"
-  integrity sha512-eUq7Efp6Wn0/IzSs4EP55whnN2jQF/U20HxIEOg+zW3RyfuM6ypW7RvdMiJV+AOeVfsU6Yn76sraz1ayDgZvBg==
+"@smithy/util-stream@^4.7.9":
+  version "4.7.9"
+  resolved "https://registry.yarnpkg.com/@smithy/util-stream/-/util-stream-4.7.9.tgz#6c568dae473d488eec39489d78937a1b8ff555df"
+  integrity sha512-mXmwBoZ91Pjvngg5Aoze4WubJieqbhKxBIoSCURtyAdNO3zwBgIVr53OBbClym0EMUfHpmkmdtlwDszVt6rsfw==
   dependencies:
-    "@smithy/core" "^3.29.1"
+    "@smithy/core" "^3.29.4"
     tslib "^2.6.2"
 
 "@standard-schema/spec@^1.1.0":
