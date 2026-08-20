@@ -1,24 +1,55 @@
-const { execFile } = require('node:child_process')
-const fs = require('node:fs')
-const path = require('node:path')
-const { Readable } = require('node:stream')
-const { promisify } = require('node:util')
-const { sdkStreamMixin } = require('@smithy/util-stream')
-const { mockClient } = require('aws-sdk-client-mock')
-require('aws-sdk-client-mock-jest')
-const {
+import { execFile } from 'node:child_process'
+import fs from 'node:fs'
+import Module, { createRequire } from 'node:module'
+import path from 'node:path'
+import { Readable } from 'node:stream'
+import { promisify } from 'node:util'
+import {
   DeleteObjectCommand,
   GetObjectCommand,
   PutObjectCommand,
   S3Client,
-} = require('@aws-sdk/client-s3')
-const s3UnzipPlus = require('../lib').default
+} from '@aws-sdk/client-s3'
+import { sdkStreamMixin } from '@smithy/util-stream'
+import { mockClient } from 'aws-sdk-client-mock'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import s3UnzipPlus from '../lib/index.js'
 
 const s3Mock = mockClient(S3Client)
 const execFileAsync = promisify(execFile)
+const require = createRequire(import.meta.url)
 const binPath = path.join(process.cwd(), 'bin/s3-unzip-plus')
+const binModulePath = require.resolve('../bin/s3-unzip-plus')
 
-const createBody = (path) => {
+type ModuleLoader = (
+  request: string,
+  parent: { filename?: string } | null | undefined,
+  isMain: boolean
+) => unknown
+
+const runBinWithMock = async (argv: string[], unzip: ReturnType<typeof vi.fn>) => {
+  const moduleWithLoad = Module as unknown as { _load: ModuleLoader }
+  const originalLoad = moduleWithLoad._load
+
+  process.argv = [process.execPath, binPath, ...argv]
+  delete require.cache[binModulePath]
+  moduleWithLoad._load = (request, parent, isMain) => {
+    if (request === '../lib/index.js' && parent?.filename === binModulePath) {
+      return { default: unzip }
+    }
+
+    return originalLoad(request, parent, isMain)
+  }
+
+  try {
+    require('../bin/s3-unzip-plus')
+    await new Promise(setImmediate)
+  } finally {
+    moduleWithLoad._load = originalLoad
+  }
+}
+
+const createBody = (path: string) => {
   const stream = Readable.from([fs.readFileSync(path)])
   return sdkStreamMixin(stream)
 }
@@ -80,8 +111,7 @@ describe('bin/s3-unzip-plus', () => {
 
   afterEach(() => {
     process.argv = originalArgv
-    jest.resetModules()
-    jest.dontMock('../lib/index.js')
+    delete require.cache[binModulePath]
   })
 
   it('should show help', async () => {
@@ -102,26 +132,12 @@ describe('bin/s3-unzip-plus', () => {
   })
 
   it('should pass parsed arguments and flags to the library', async () => {
-    const unzip = jest.fn().mockResolvedValue(undefined)
+    const unzip = vi.fn().mockResolvedValue(undefined)
 
-    jest.doMock('../lib/index.js', () => ({
-      default: unzip,
-    }))
-
-    process.argv = [
-      process.execPath,
-      binPath,
-      'source-bucket',
-      'archive.zip',
-      'target-bucket',
-      'target-folder',
-      '-d',
-      '-m',
-      '-v',
-    ]
-
-    require('../bin/s3-unzip-plus')
-    await new Promise(setImmediate)
+    await runBinWithMock(
+      ['source-bucket', 'archive.zip', 'target-bucket', 'target-folder', '-d', '-m', '-v'],
+      unzip
+    )
 
     expect(unzip).toHaveBeenCalledWith({
       bucket: 'source-bucket',
@@ -135,16 +151,9 @@ describe('bin/s3-unzip-plus', () => {
   })
 
   it('should default target bucket and target folder', async () => {
-    const unzip = jest.fn().mockResolvedValue(undefined)
+    const unzip = vi.fn().mockResolvedValue(undefined)
 
-    jest.doMock('../lib/index.js', () => ({
-      default: unzip,
-    }))
-
-    process.argv = [process.execPath, binPath, 'source-bucket', 'archive.zip']
-
-    require('../bin/s3-unzip-plus')
-    await new Promise(setImmediate)
+    await runBinWithMock(['source-bucket', 'archive.zip'], unzip)
 
     expect(unzip).toHaveBeenCalledWith({
       bucket: 'source-bucket',
