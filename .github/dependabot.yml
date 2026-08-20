@@ -9,12 +9,12 @@ updates:
     open-pull-requests-limit: 10
     versioning-strategy: increase
     groups:
-      babel-dependencies:
-        patterns:
-          - "*babel*"
       aws-sdk-dependencies:
         patterns:
           - "*aws-sdk*"
+      aws-sdk-client-dependencies:
+        patterns:
+          - "*aws-sdk-client*"
   - package-ecosystem: github-actions
     directory: "/"
     schedule:

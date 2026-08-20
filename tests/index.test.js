@@ -1,24 +1,24 @@
-import { execFile } from 'node:child_process'
-import fs from 'node:fs'
-import path from 'node:path'
-import { Readable } from 'node:stream'
-import { promisify } from 'node:util'
-import { sdkStreamMixin } from '@smithy/util-stream'
-import { mockClient } from 'aws-sdk-client-mock'
-import 'aws-sdk-client-mock-jest'
-import {
+const { execFile } = require('node:child_process')
+const fs = require('node:fs')
+const path = require('node:path')
+const { Readable } = require('node:stream')
+const { promisify } = require('node:util')
+const { sdkStreamMixin } = require('@smithy/util-stream')
+const { mockClient } = require('aws-sdk-client-mock')
+require('aws-sdk-client-mock-jest')
+const {
   DeleteObjectCommand,
   GetObjectCommand,
   PutObjectCommand,
   S3Client,
-} from '@aws-sdk/client-s3'
-import s3UnzipPlus from '../src'
+} = require('@aws-sdk/client-s3')
+const s3UnzipPlus = require('../lib').default
 
 const s3Mock = mockClient(S3Client)
 const execFileAsync = promisify(execFile)
 const binPath = path.join(process.cwd(), 'bin/s3-unzip-plus')
 
-const createBody = (path: string) => {
+const createBody = (path) => {
   const stream = Readable.from([fs.readFileSync(path)])
   return sdkStreamMixin(stream)
 }
@@ -47,8 +47,31 @@ describe('build outputs', () => {
     const cjsModule = require(cjsPath)
     expect(typeof cjsModule.default).toBe('function')
     expect(typeof cjsModule.handler).toBe('function')
+  })
 
-    // ESM format is validated by source checks above; Jest runs in CJS.
+  it('should expose a working ESM entrypoint when built', async () => {
+    const esmPath = `${process.cwd()}/esm/index.js`
+
+    if (!fs.existsSync(esmPath)) {
+      // Build artifacts not present; skip this check in dev/test without build
+      return
+    }
+
+    const { stdout } = await execFileAsync(process.execPath, [
+      '--input-type=module',
+      '--eval',
+      `
+        import s3UnzipPlus, { handler } from ${JSON.stringify(`file://${esmPath}`)}
+
+        if (typeof s3UnzipPlus !== 'function') throw new Error('Invalid default export')
+        if (typeof handler !== 'function') throw new Error('Invalid handler export')
+
+        await s3UnzipPlus({})
+        console.log('esm-ok')
+      `,
+    ])
+
+    expect(stdout).toContain('esm-ok')
   })
 })
 
