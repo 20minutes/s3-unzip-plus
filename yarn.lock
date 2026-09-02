@@ -20,10 +20,10 @@
     "@smithy/types" "^4.17.2"
     tslib "^2.6.2"
 
-"@aws-sdk/client-s3@^3.1116.0":
-  version "3.1116.0"
-  resolved "https://registry.yarnpkg.com/@aws-sdk/client-s3/-/client-s3-3.1116.0.tgz#1e2eec221df81a255a4942bbcbe37e90f5dc3099"
-  integrity sha512-UKRl9qSVW0rZpvSOauQNpYAy8+ONBAVYnpfKVtCyOF+FZVT1tl6MunYuHvuarCrroD2/YJs+tHTALYNgAlec3Q==
+"@aws-sdk/client-s3@^3.1121.0":
+  version "3.1121.0"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/client-s3/-/client-s3-3.1121.0.tgz#6fc78ca0169448f3eb07dd5e9f519e870eb1b21e"
+  integrity sha512-hBnoqaVBeWdkgXcJElMXA2yUZWkBCBntu2qmN+tfqmzC+j4LzJC3ox8qIgS2WdMS1cb8UwyBogUVrkRXybNm0A==
   dependencies:
     "@aws-sdk/checksums" "^3.1000.29"
     "@aws-sdk/core" "^3.977.9"
@@ -159,10 +159,10 @@
     "@smithy/types" "^4.17.2"
     tslib "^2.6.2"
 
-"@aws-sdk/lib-storage@^3.1116.0":
-  version "3.1116.0"
-  resolved "https://registry.yarnpkg.com/@aws-sdk/lib-storage/-/lib-storage-3.1116.0.tgz#b949179fca3b2c759ed71b6a456caaa63e0bd10c"
-  integrity sha512-40z1NyzCbRX9bD6g3dJ6E4WDbYPDod6XHTIbNZPnGDYMYH2TPIj6LyRZ94fWPKGYnJpO0Q0Uhi2lSnn2E7PIdg==
+"@aws-sdk/lib-storage@^3.1121.0":
+  version "3.1121.0"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/lib-storage/-/lib-storage-3.1121.0.tgz#828ba06979f16996c40490ff41daea2f3748826b"
+  integrity sha512-sx86QqM0/HjKNCS5eQGcaP9Q8GKg3FtCExO/6FfGyw00JNUsFJPmEKNCJIkWY7OmKS9jIOuJe/DtAgfr/+G/bQ==
   dependencies:
     "@smithy/core" "^3.33.3"
     "@smithy/types" "^4.17.2"
