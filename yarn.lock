@@ -647,7 +647,7 @@
   resolved "https://registry.yarnpkg.com/@typescript/typescript-win32-x64/-/typescript-win32-x64-7.0.2.tgz#cf3b7b0d6ce5635daca4c8e01c189cdcde47ec3c"
   integrity sha512-0BQ3HkAHHlKLSp1qRvf3SUhGpGsDuhB/jgFw75guyqbxJqEaS0Cw/VFO8i2nHglJUzQCRtMMR/IBAKE3ETMC4g==
 
-"@vitest/expect@4.1.11", "@vitest/expect@^4.1.0":
+"@vitest/expect@4.1.11":
   version "4.1.11"
   resolved "https://registry.yarnpkg.com/@vitest/expect/-/expect-4.1.11.tgz#5f580d1f9cdbba314dbf23b2d911f8eb23878f5f"
   integrity sha512-VX2x5vNJXET47KAFzwERI+KRMtTTCSWTfSMKsW7JsUsXV4psq++e3DvZpuTDOpHcxytiDs6p2nhVb2tVDiiUYw==
@@ -722,12 +722,10 @@ assertion-error@^2.0.1:
   resolved "https://registry.yarnpkg.com/assertion-error/-/assertion-error-2.0.1.tgz#f641a196b335690b1070bf00b6e7593fec190bf7"
   integrity sha512-Izi8RQcffqCeNVgFigKli1ssklIbpHnCYc6AknXGYoB6grJqyeby7jv12JUQgmTAnIDnbck1uxksT4dzN3PWBA==
 
-aws-sdk-client-mock-vitest@^7.1.0:
-  version "7.1.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk-client-mock-vitest/-/aws-sdk-client-mock-vitest-7.1.0.tgz#3fc397dd3d4a4d92f403600bfd8b001375d089b9"
-  integrity sha512-Qjl5cHdTysOfsq7ac0UFchQKW/A4NbVL4uhU1FcPmawAQQ8Bt6xsTJA//gWCkZO9+hHQxcCJfpmWbSYm02po1A==
-  dependencies:
-    "@vitest/expect" "^4.1.0"
+aws-sdk-client-mock-vitest@^8.0.0:
+  version "8.0.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk-client-mock-vitest/-/aws-sdk-client-mock-vitest-8.0.0.tgz#27438f9ce9288fb46a28ec28d24fdb3b15c81aee"
+  integrity sha512-GMW7Q3V6ZOn6jMMrw7xoqsl3fLxEY4p9EE0CvWjvsssEbSbV0ZNsTKhgQXxon3Cfx/7zzRYKPdpvqRyzLAFEHQ==
 
 aws-sdk-client-mock@^4.1.0:
   version "4.1.0"
