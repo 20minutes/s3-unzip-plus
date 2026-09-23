@@ -829,10 +829,10 @@ electron-to-chromium@^1.5.420:
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.5.429.tgz#1f9bf3eea3c99942dd86d66e121e8b864c26f01e"
   integrity sha512-/1ENIE3cx4HTIx4IfPZFaOunJmsrSVTnj6coXoRVbiJUbkeTyFkJvBeWGkdgh08OhFbxYLMT1kbkwFVSarq6Ow==
 
-es-check@^9.7.1:
-  version "9.7.1"
-  resolved "https://registry.yarnpkg.com/es-check/-/es-check-9.7.1.tgz#50d5a5182b63e4517cdec3278cab56b9f6f0dfd8"
-  integrity sha512-A8H8XA+HsqNKhZt9dKpwOOGXEFOU7bNtzVVg7hA3LNwNTvrA05bmGuG9Aof2mnEQGCFPf9qXRSTic4eCXG/taw==
+es-check@^9.8.0:
+  version "9.8.0"
+  resolved "https://registry.yarnpkg.com/es-check/-/es-check-9.8.0.tgz#914ba451fc4e8c2bbe6bd92ba9b1fc8828427945"
+  integrity sha512-v1Tl0zXYqsfh/If+OUc9odaPN4br08Y0r8uyxXsfo3x8L+Mua3HrcyuI0H9gFGhjGlTcQ1VNVKf0tj24g2AK2w==
   dependencies:
     acorn "8.18.0"
     browserslist "4.28.9"
