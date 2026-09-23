@@ -717,6 +717,11 @@ adm-zip@^0.6.1:
   resolved "https://registry.yarnpkg.com/adm-zip/-/adm-zip-0.6.1.tgz#5b95da4a6e7af0663b71457c06e1517fa6ac8d5f"
   integrity sha512-Xwrja8nx9e5o2N1my4DsKCeKpdrnACyr1wtbPxBDgGzKzKyE9kRtBFA8mWldI+RVlD7CBZNWY/wQ2+ydwOR6kQ==
 
+ansis@4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/ansis/-/ansis-4.2.0.tgz#2e6e61c46b11726ac67f78785385618b9e658780"
+  integrity sha512-HqZ5rWlFjGiV0tDm3UxxgNRqsOTniqoKZu0pIAfh7TZQMGuZK+hH0drySty0si0QXj1ieop4+SkSfPZBPPkHig==
+
 assertion-error@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/assertion-error/-/assertion-error-2.0.1.tgz#f641a196b335690b1070bf00b6e7593fec190bf7"
@@ -801,13 +806,14 @@ chai@^6.2.2:
   resolved "https://registry.yarnpkg.com/chai/-/chai-6.2.2.tgz#ae41b52c9aca87734505362717f3255facda360e"
   integrity sha512-NUPRluOfOiTKBKvWPtSD4PhFvWCqOi0BGStNWs57X9js7XGTprSmFoz5F0tWhR4WPjNeR9jXqdC7/UpSJTnlRg==
 
-cleye@^2.6.0:
-  version "2.6.0"
-  resolved "https://registry.yarnpkg.com/cleye/-/cleye-2.6.0.tgz#61af2d95d507925d25053f5f7a90b371b5f558fb"
-  integrity sha512-u0SQCsega/ox+2GSuUlG6wvA9c2FtH8sPmv9G9Q3JRTs7FK6+LtaziRAQgx7lrJ1J7bOd3palhwgZKMg8R6JbQ==
+cleye@^2.7.0:
+  version "2.7.0"
+  resolved "https://registry.yarnpkg.com/cleye/-/cleye-2.7.0.tgz#c758b7c93cbd76e1d3f067ff6500f55dd6bb2dca"
+  integrity sha512-vSxO418kPRu+oNh6dit+ZMUQf0fQYifZs/2cP85RQqbMtnlJ0tshkxyiMZlKOhMntct4hgi1GC1DXUS5T/zoxA==
   dependencies:
+    ansis "4.2.0"
     terminal-columns "^2.0.0"
-    type-flag "^4.1.0"
+    type-flag "^4.5.2"
 
 convert-source-map@^2.0.0:
   version "2.0.0"
@@ -1315,10 +1321,10 @@ type-detect@^4.1.0:
   resolved "https://registry.yarnpkg.com/type-detect/-/type-detect-4.1.0.tgz#deb2453e8f08dcae7ae98c626b13dddb0155906c"
   integrity sha512-Acylog8/luQ8L7il+geoSxhEkazvkslg7PSNKOX59mbB9cOveP5aq9h74Y7YU8yDpJwetzQQrfIwtf4Wp4LKcw==
 
-type-flag@^4.1.0:
-  version "4.5.0"
-  resolved "https://registry.yarnpkg.com/type-flag/-/type-flag-4.5.0.tgz#32bc2c735cab7d1d5875a83499a206c16ecddb31"
-  integrity sha512-1aLzxcL6u1O9XHieAJBBX9U4QzwzDTWN0ER9M7QQSvS24NBmGM+N8FcghlgHAzOvDlEEpOx4hEml9CVcDnflcw==
+type-flag@^4.5.2:
+  version "4.5.2"
+  resolved "https://registry.yarnpkg.com/type-flag/-/type-flag-4.5.2.tgz#3b0df419260c64e990f7e7935825fac3ade2216b"
+  integrity sha512-v8O8xoLq3W6eKKYZvlyvk8LI46ryYkfnKrjGVdJzO+1LsxUu1ztvVAKFzQpphKQgS0ucinnbAiEGUbvibQmt/A==
 
 typescript@^7.0.2:
   version "7.0.2"
